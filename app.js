@@ -25,7 +25,12 @@ import * as orderItemController from "./controllers/orderItems.js";
 dotenv.config();
 const app = express();
 
-app.use(cors());
+app.use(
+  cors({
+    origin: "http://localhost:4200",
+    credentials: true,
+  })
+);
 app.use(bodyParser.json());
 app.use(cookieParser());
 
@@ -84,6 +89,9 @@ app.post("/api/order-items", orderItemController.createOrderItem);
 app.get("/api/order-items/:id", orderItemController.getOrderItemById);
 app.put("/api/order-items/:id", orderItemController.updateOrderItem);
 app.delete("/api/order-items/:id", orderItemController.deleteOrderItem);
+
+
+app.use(express.json());
 
 // Start server
 const PORT = process.env.PORT || 3000;
