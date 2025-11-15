@@ -8,6 +8,8 @@ const User = sequelize.define("User", {
   password: DataTypes.STRING,
   phone: DataTypes.STRING,
   address: DataTypes.STRING,
+  isRestaurant: { type: DataTypes.BOOLEAN, defaultValue: false },
+  isCourier: { type: DataTypes.BOOLEAN, defaultValue: false },
 });
 
 export default User;
