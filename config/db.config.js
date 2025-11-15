@@ -1,15 +1,8 @@
-import { Sequelize } from "sequelize";
 import dotenv from "dotenv";
-
 dotenv.config();
 
-const sequelize = new Sequelize(process.env.DATABASE_URL, {
-  dialect: "postgres",
-  dialectOptions: {
-    ssl: { require: true, rejectUnauthorized: false },
-  },
-  logging: false,
-});
+// Import the sequelize instance (no longer create it here)
+import sequelize from "./sequelize.js";
 
 // Import models
 import User from "../models/user.model.js";

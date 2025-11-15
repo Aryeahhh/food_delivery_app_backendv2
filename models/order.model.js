@@ -1,5 +1,5 @@
 import { DataTypes } from "sequelize";
-import sequelize from "../config/db.config.js";
+import sequelize from "../config/sequelize.js";
 import User from "./user.model.js";
 import Restaurant from "./restaurant.model.js";
 import Courier from "./courier.model.js";

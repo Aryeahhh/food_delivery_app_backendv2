@@ -1,5 +1,5 @@
 import { DataTypes } from "sequelize";
-import sequelize from "../config/db.config.js";
+import sequelize from "../config/sequelize.js";
 
 const Restaurant = sequelize.define("Restaurant", {
   restaurant_id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
