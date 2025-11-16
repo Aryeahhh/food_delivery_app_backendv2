@@ -1,6 +1,7 @@
 import Restaurant from "../models/restaurant.model.js";
 import MenuItem from "../models/menuItem.model.js";
 import Courier from "../models/courier.model.js";
+import User from "../models/user.model.js";
 
 // POST /api/admin/restaurants
 export const addRestaurant = async (req, res) => {
@@ -14,10 +15,20 @@ export const addRestaurant = async (req, res) => {
       cuisineType,
       details,
       user_id,
+      owner_email,
     } = req.body;
 
-    if (!user_id) {
-      return res.status(400).json({ error: "user_id is required (owner user id)" });
+    let ownerId = user_id;
+    if (!ownerId && owner_email) {
+      const owner = await User.findOne({ where: { email: owner_email } });
+      if (!owner) {
+        return res.status(404).json({ error: "Owner not found for provided email" });
+      }
+      ownerId = owner.user_id;
+    }
+
+    if (!ownerId) {
+      return res.status(400).json({ error: "Provide either user_id or owner_email" });
     }
 
     const restaurant = await Restaurant.create({
@@ -28,7 +39,7 @@ export const addRestaurant = async (req, res) => {
       isapproved,
       cuisineType,
       details,
-      user_id,
+      user_id: ownerId,
     });
 
     res.status(201).json({
@@ -151,7 +162,14 @@ export const deleteMenuItem = async (req, res) => {
 // GET /api/admin/restaurants/pending - list restaurants needing approval
 export const listPendingRestaurants = async (req, res) => {
   try {
-    const pending = await Restaurant.findAll({ where: { isapproved: false } });
+    const pending = await Restaurant.findAll({ 
+      where: { isapproved: false },
+      include: [{
+        model: User,
+        as: 'owner',
+        attributes: ['user_id', 'name', 'email']
+      }]
+    });
     res.json({ count: pending.length, restaurants: pending });
   } catch (error) {
     res.status(500).json({ error: error.message });
