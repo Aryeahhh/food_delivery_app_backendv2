@@ -5,7 +5,7 @@ import User from "../models/user.model.js";
 // POST /api/users/register
 export const register = async (req, res) => {
   try {
-    const { name, email, password, phone, address } = req.body;
+    const { name, email, password, phone, address, isAdmin = false, isCourier = false, isRestaurant = false } = req.body;
 
     // Check if user already exists
     const existingUser = await User.findOne({ where: { email } });
@@ -23,6 +23,9 @@ export const register = async (req, res) => {
       password: hashedPassword,
       phone,
       address,
+      isAdmin: Boolean(isAdmin),
+      isCourier: Boolean(isCourier),
+      isRestaurant: Boolean(isRestaurant),
     });
 
     // Generate JWT token
@@ -48,6 +51,9 @@ export const register = async (req, res) => {
         email: user.email,
         phone: user.phone,
         address: user.address,
+        isAdmin: user.isAdmin,
+        isCourier: user.isCourier,
+        isRestaurant: user.isRestaurant,
       },
       token, // still returning for convenience; frontend can also rely on cookie
     });
@@ -96,6 +102,9 @@ export const login = async (req, res) => {
         email: user.email,
         phone: user.phone,
         address: user.address,
+        isAdmin: user.isAdmin,
+        isCourier: user.isCourier,
+        isRestaurant: user.isRestaurant,
       },
       token,
     });

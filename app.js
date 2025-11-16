@@ -4,6 +4,7 @@ import cors from "cors";
 import bodyParser from "body-parser";
 import sequelize from "./config/db.config.js";
 import cookieParser from "cookie-parser";
+import { verifyCookieJWT, requireAdmin, requireRestaurant } from "./middleware/cookieAuth.js";
 
 // Import all models
 import "./models/user.model.js";
@@ -52,18 +53,22 @@ app.get("/api/users/profile/:id", userController.getProfile);
 app.put("/api/users/:id", userController.updateUser);
 app.delete("/api/users/:id", userController.deleteAccount);
 
-// Admin Routes
-app.post("/api/admin/restaurants", adminController.addRestaurant);
-app.post("/api/admin/menu-items", adminController.addMenuItem);
-app.post("/api/admin/couriers", adminController.addCourier);
-app.delete("/api/admin/restaurants/:id", adminController.deleteRestaurant);
-app.delete("/api/admin/menu-items/:id", adminController.deleteMenuItem);
+// Admin Routes (protected)
+app.post("/api/admin/restaurants", verifyCookieJWT, requireAdmin, adminController.addRestaurant);
+app.post("/api/admin/menu-items", verifyCookieJWT, requireAdmin, adminController.addMenuItem);
+app.post("/api/admin/couriers", verifyCookieJWT, requireAdmin, adminController.addCourier);
+app.delete("/api/admin/restaurants/:id", verifyCookieJWT, requireAdmin, adminController.deleteRestaurant);
+app.delete("/api/admin/menu-items/:id", verifyCookieJWT, requireAdmin, adminController.deleteMenuItem);
+app.get("/api/admin/restaurants/pending", verifyCookieJWT, requireAdmin, adminController.listPendingRestaurants);
+app.put("/api/admin/restaurants/:id/approve", verifyCookieJWT, requireAdmin, adminController.approveRestaurant);
 
 // Restaurant Routes
 app.get("/api/restaurants", restaurantController.getAllRestaurants);
 app.get("/api/restaurants/:id", restaurantController.getRestaurantById);
 app.get("/api/restaurants/:id/menu", restaurantController.getRestaurantMenu);
 app.put("/api/restaurants/:id/orders/:orderId", restaurantController.acceptOrder);
+app.post("/api/restaurants", verifyCookieJWT, requireRestaurant, restaurantController.createOwnRestaurant);
+app.post("/api/restaurants/:id/menu-items", verifyCookieJWT, requireRestaurant, restaurantController.addMenuItemForOwnRestaurant);
 
 // MenuItem Routes
 app.get("/api/menu-items", menuItemController.getAllMenuItems);

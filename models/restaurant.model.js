@@ -7,9 +7,10 @@ const Restaurant = sequelize.define("Restaurant", {
   address: DataTypes.STRING,
   phone: DataTypes.STRING,
   email: DataTypes.STRING,
-  isapproved: { type: DataTypes.BOOLEAN, defaultValue: true },
+  isapproved: { type: DataTypes.BOOLEAN, defaultValue: false },
   cuisineType: DataTypes.STRING,
   details: DataTypes.TEXT,
+  image: { type: DataTypes.BLOB("long"), allowNull: true },
   user_id: { type: DataTypes.INTEGER, allowNull: false },
 });
 
