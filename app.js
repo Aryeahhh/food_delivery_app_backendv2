@@ -23,6 +23,7 @@ import * as menuItemController from "./controllers/menuItems.js";
 import * as courierController from "./controllers/couriers.js";
 import * as orderController from "./controllers/orders.js";
 import * as orderItemController from "./controllers/orderItems.js";
+import * as chatbotController from "./controllers/chatbot.js";
 
 dotenv.config();
 const app = express();
@@ -101,6 +102,9 @@ app.post("/api/order-items", orderItemController.createOrderItem);
 app.get("/api/order-items/:id", orderItemController.getOrderItemById);
 app.put("/api/order-items/:id", orderItemController.updateOrderItem);
 app.delete("/api/order-items/:id", orderItemController.deleteOrderItem);
+
+// Chatbot Routes
+app.post("/api/chat", chatbotController.chat);
 
 
 app.use(express.json());
