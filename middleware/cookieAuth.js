@@ -54,3 +54,15 @@ export async function requireRestaurant(req, res, next) {
     return res.status(500).json({ error: "Role check failed" });
   }
 }
+
+export async function requireAdminOrRestaurant(req, res, next) {
+  try {
+    if (!req.user?.user_id) return res.status(401).json({ error: "Unauthenticated" });
+    const user = await User.findByPk(req.user.user_id);
+    if (!user) return res.status(401).json({ error: "User not found" });
+    if (!user.isAdmin && !user.isRestaurant) return res.status(403).json({ error: "Admin or Restaurant access required" });
+    next();
+  } catch (err) {
+    return res.status(500).json({ error: "Role check failed" });
+  }
+}

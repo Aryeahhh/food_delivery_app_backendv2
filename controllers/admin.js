@@ -188,3 +188,48 @@ export const approveRestaurant = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+// PUT /api/admin/restaurants/:id - update basic fields (admin only)
+export const updateRestaurant = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const restaurant = await Restaurant.findByPk(id);
+    if (!restaurant) return res.status(404).json({ error: "Restaurant not found" });
+
+    const {
+      name,
+      address,
+      phone,
+      email,
+      cuisineType,
+      details,
+      // optional: owner changes
+      user_id,
+      owner_email,
+    } = req.body || {};
+
+    const updates = {};
+    if (typeof name !== 'undefined') updates.name = name;
+    if (typeof address !== 'undefined') updates.address = address;
+    if (typeof phone !== 'undefined') updates.phone = phone;
+    if (typeof email !== 'undefined') updates.email = email;
+    if (typeof cuisineType !== 'undefined') updates.cuisineType = cuisineType;
+    if (typeof details !== 'undefined') updates.details = details;
+
+    // Handle owner change if provided
+    let newOwnerId = user_id;
+    if (!newOwnerId && owner_email) {
+      const owner = await User.findOne({ where: { email: owner_email } });
+      if (!owner) return res.status(404).json({ error: "Owner not found for provided email" });
+      newOwnerId = owner.user_id;
+    }
+    if (typeof newOwnerId !== 'undefined' && newOwnerId !== null) {
+      updates.user_id = newOwnerId;
+    }
+
+    await restaurant.update(updates);
+    res.json({ message: "Restaurant updated", restaurant });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};

@@ -4,7 +4,8 @@ import cors from "cors";
 import bodyParser from "body-parser";
 import sequelize from "./config/db.config.js";
 import cookieParser from "cookie-parser";
-import { verifyCookieJWT, requireAdmin, requireRestaurant } from "./middleware/cookieAuth.js";
+import multer from "multer";
+import { verifyCookieJWT, requireAdmin, requireRestaurant, requireAdminOrRestaurant } from "./middleware/cookieAuth.js";
 
 // Import all models
 import "./models/user.model.js";
@@ -25,6 +26,9 @@ import * as orderItemController from "./controllers/orderItems.js";
 
 dotenv.config();
 const app = express();
+
+// in-memory upload for small images (stored as bytea)
+const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 5 * 1024 * 1024 } });
 
 app.use(
   cors({
@@ -61,14 +65,17 @@ app.delete("/api/admin/restaurants/:id", verifyCookieJWT, requireAdmin, adminCon
 app.delete("/api/admin/menu-items/:id", verifyCookieJWT, requireAdmin, adminController.deleteMenuItem);
 app.get("/api/admin/restaurants/pending", verifyCookieJWT, requireAdmin, adminController.listPendingRestaurants);
 app.put("/api/admin/restaurants/:id/approve", verifyCookieJWT, requireAdmin, adminController.approveRestaurant);
+app.put("/api/admin/restaurants/:id", verifyCookieJWT, requireAdmin, adminController.updateRestaurant);
 
 // Restaurant Routes
 app.get("/api/restaurants", restaurantController.getAllRestaurants);
 app.get("/api/restaurants/:id", restaurantController.getRestaurantById);
 app.get("/api/restaurants/:id/menu", restaurantController.getRestaurantMenu);
+app.get("/api/restaurants/:id/image", restaurantController.getRestaurantImage);
 app.put("/api/restaurants/:id/orders/:orderId", restaurantController.acceptOrder);
 app.post("/api/restaurants", verifyCookieJWT, requireRestaurant, restaurantController.createOwnRestaurant);
 app.post("/api/restaurants/:id/menu-items", verifyCookieJWT, requireRestaurant, restaurantController.addMenuItemForOwnRestaurant);
+app.put("/api/restaurants/:id/image", verifyCookieJWT, requireAdminOrRestaurant, upload.single("image"), restaurantController.uploadRestaurantImage);
 
 // MenuItem Routes
 app.get("/api/menu-items", menuItemController.getAllMenuItems);
