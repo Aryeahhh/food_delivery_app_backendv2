@@ -12,6 +12,9 @@ const Restaurant = sequelize.define("Restaurant", {
   details: DataTypes.TEXT,
   image: { type: DataTypes.BLOB("long"), allowNull: true },
   user_id: { type: DataTypes.INTEGER, allowNull: false },
+  rating_sum: { type: DataTypes.INTEGER, defaultValue: 0 },
+  rating_count: { type: DataTypes.INTEGER, defaultValue: 0 },
+  avg_rating: { type: DataTypes.DECIMAL(3, 2) },
 });
 
 export default Restaurant;
