@@ -87,13 +87,16 @@ app.delete("/api/menu-items/:id", menuItemController.deleteMenuItem);
 
 // Courier Routes
 app.get("/api/couriers", courierController.getAllCouriers);
-app.get("/api/couriers/:id/orders", courierController.viewAssignedOrders);
-app.put("/api/couriers/:id/orders/:orderId/status", courierController.updateOrderStatus);
+app.get("/api/couriers/:id/current-order", courierController.getCurrentOrder);
+app.get("/api/couriers/:id/past-orders", courierController.getPastOrders);
+app.put("/api/couriers/:id/availability", courierController.toggleAvailability);
 
 // Order Routes
+app.get("/api/orders/available", courierController.getAvailableOrders);
+app.put("/api/orders/:id/accept", courierController.acceptOrder);
+app.put("/api/orders/:id/status", courierController.updateOrderStatus);
 app.post("/api/orders", orderController.createOrder);
 app.get("/api/orders/:id", orderController.getOrderById);
-app.put("/api/orders/:id/status", orderController.updateOrderStatus);
 app.delete("/api/orders/:id", orderController.deleteOrder);
 app.get("/api/orders/user/:userId", orderController.getOrdersByUser);
 

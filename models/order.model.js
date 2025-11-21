@@ -10,6 +10,8 @@ const Order = sequelize.define("Order", {
   order_time: { type: DataTypes.DATE, defaultValue: DataTypes.NOW },
   status: { type: DataTypes.STRING, defaultValue: "Pending" },
   estimated_delivery_time: DataTypes.DATE,
+  delivery_fee: { type: DataTypes.DECIMAL(10, 2), defaultValue: 5.00 },
+  tip: { type: DataTypes.DECIMAL(10, 2), defaultValue: 0.00 },
 });
 
 // Note: Associations are defined in config/db.config.js to avoid duplicates

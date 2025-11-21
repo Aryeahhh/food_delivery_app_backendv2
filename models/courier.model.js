@@ -3,17 +3,17 @@ import sequelize from "../config/sequelize.js";
 
 const Courier = sequelize.define("Courier", {
   courier_id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-  name: DataTypes.STRING,
-  email: DataTypes.STRING,
-  phone: DataTypes.STRING,
-  address: DataTypes.STRING,
+  name: { type: DataTypes.STRING, allowNull: false },
+  email: { type: DataTypes.STRING, allowNull: true },
+  phone: { type: DataTypes.STRING, allowNull: false },
+  address: { type: DataTypes.STRING, allowNull: true },
   isActive: { type: DataTypes.BOOLEAN, defaultValue: false },
-  vehicleMake: DataTypes.STRING,
-  vehicleModel: DataTypes.STRING,
-  vehicleYear: DataTypes.INTEGER,
-  licensePlate: DataTypes.STRING,
-  vehicleColour: DataTypes.STRING,
-  city: DataTypes.STRING,
+  vehicleMake: { type: DataTypes.STRING, allowNull: true },
+  vehicleModel: { type: DataTypes.STRING, allowNull: true },
+  vehicleYear: { type: DataTypes.INTEGER, allowNull: true },
+  licensePlate: { type: DataTypes.STRING, allowNull: true },
+  vehicleColour: { type: DataTypes.STRING, allowNull: true },
+  city: { type: DataTypes.STRING, allowNull: true },
   user_id: { type: DataTypes.INTEGER, allowNull: false },
 });
 

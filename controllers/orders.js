@@ -8,7 +8,7 @@ import MenuItem from "../models/menuItem.model.js";
 // POST /api/orders
 export const createOrder = async (req, res) => {
   try {
-    const { user_id, restaurant_id, courier_id, order_address, order_items } = req.body;
+    const { user_id, restaurant_id, courier_id, order_address, order_items, tip, delivery_fee } = req.body;
 
     // Verify user exists
     const user = await User.findByPk(user_id);
@@ -29,6 +29,8 @@ export const createOrder = async (req, res) => {
       courier_id: courier_id || null,
       order_address: order_address || user.address,
       status: "Pending",
+      tip: tip || 0.00,
+      delivery_fee: delivery_fee || 5.00,
     });
 
     // Create order items if provided
@@ -45,11 +47,12 @@ export const createOrder = async (req, res) => {
     // Fetch complete order with items
     const completeOrder = await Order.findByPk(order.order_id, {
       include: [
-        { model: User, attributes: ["user_id", "name", "phone"] },
+        { model: User, as: "customer", attributes: ["user_id", "name", "phone"] },
         { model: Restaurant, attributes: ["restaurant_id", "name", "address"] },
-        { model: Courier, attributes: ["courier_id", "name", "phone"] },
+        { model: Courier, as: "courier", attributes: ["courier_id", "name", "phone"] },
         {
           model: OrderItem,
+          as: "items",
           include: [{ model: MenuItem, attributes: ["menu_item_id", "item_name", "item_price"] }],
         },
       ],
