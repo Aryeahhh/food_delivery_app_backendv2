@@ -12,13 +12,6 @@ const Order = sequelize.define("Order", {
   estimated_delivery_time: DataTypes.DATE,
 });
 
-User.hasMany(Order, { foreignKey: "user_id" });
-Order.belongsTo(User, { foreignKey: "user_id" });
-
-Restaurant.hasMany(Order, { foreignKey: "restaurant_id" });
-Order.belongsTo(Restaurant, { foreignKey: "restaurant_id" });
-
-Courier.hasMany(Order, { foreignKey: "courier_id" });
-Order.belongsTo(Courier, { foreignKey: "courier_id" });
+// Note: Associations are defined in config/db.config.js to avoid duplicates
 
 export default Order;

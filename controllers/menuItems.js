@@ -35,7 +35,7 @@ export const getMenuItemById = async (req, res) => {
 // POST /api/menu-items
 export const createMenuItem = async (req, res) => {
   try {
-    const { item_name, item_price, restaurant_id } = req.body;
+    const { item_name, item_price, restaurant_id, category, description } = req.body;
 
     // Verify restaurant exists
     const restaurant = await Restaurant.findByPk(restaurant_id);
@@ -47,6 +47,8 @@ export const createMenuItem = async (req, res) => {
       item_name,
       item_price,
       restaurant_id,
+      category: category || "Main",
+      description: description || null,
     });
 
     res.status(201).json({
@@ -62,7 +64,7 @@ export const createMenuItem = async (req, res) => {
 export const updateMenuItem = async (req, res) => {
   try {
     const { id } = req.params;
-    const { item_name, item_price, restaurant_id } = req.body;
+    const { item_name, item_price, restaurant_id, category, description } = req.body;
 
     const menuItem = await MenuItem.findByPk(id);
     if (!menuItem) {
@@ -81,6 +83,8 @@ export const updateMenuItem = async (req, res) => {
       item_name,
       item_price,
       restaurant_id,
+      category,
+      description,
     });
 
     res.json({

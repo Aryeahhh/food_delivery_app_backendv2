@@ -47,7 +47,7 @@ export const createOrder = async (req, res) => {
       include: [
         { model: User, attributes: ["user_id", "name", "phone"] },
         { model: Restaurant, attributes: ["restaurant_id", "name", "address"] },
-        { model: Courier, attributes: ["courier_id", "courier_name", "phone"] },
+        { model: Courier, attributes: ["courier_id", "name", "phone"] },
         {
           model: OrderItem,
           include: [{ model: MenuItem, attributes: ["menu_item_id", "item_name", "item_price"] }],
@@ -73,7 +73,7 @@ export const getOrderById = async (req, res) => {
       include: [
         { model: User, attributes: ["user_id", "name", "phone", "address"] },
         { model: Restaurant, attributes: ["restaurant_id", "name", "address"] },
-        { model: Courier, attributes: ["courier_id", "courier_name", "phone"] },
+        { model: Courier, attributes: ["courier_id", "name", "phone"] },
         {
           model: OrderItem,
           include: [{ model: MenuItem, attributes: ["menu_item_id", "item_name", "item_price"] }],
@@ -124,7 +124,7 @@ export const updateOrderStatus = async (req, res) => {
       include: [
         { model: User, attributes: ["user_id", "name", "phone"] },
         { model: Restaurant, attributes: ["restaurant_id", "name"] },
-        { model: Courier, attributes: ["courier_id", "courier_name", "phone"] },
+        { model: Courier, attributes: ["courier_id", "name", "phone"] },
       ],
     });
 
@@ -174,7 +174,7 @@ export const getOrdersByUser = async (req, res) => {
       where: { user_id: userId },
       include: [
         { model: Restaurant, attributes: ["restaurant_id", "name", "address"] },
-        { model: Courier, attributes: ["courier_id", "courier_name", "phone"] },
+        { model: Courier, attributes: ["courier_id", "name", "phone"] },
         {
           model: OrderItem,
           include: [{ model: MenuItem, attributes: ["menu_item_id", "item_name", "item_price"] }],
