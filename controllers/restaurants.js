@@ -53,6 +53,90 @@ export const getRestaurantById = async (req, res) => {
   }
 };
 
+// A method to update a restaurants reviews
+// PUT /api/restaurant/:id/review
+export const addRestaurantReview = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    console.log("Method hit");
+
+    // Verify restaurant exists
+    const restaurant = await Restaurant.findByPk(id);
+
+    if (!restaurant) {
+      return res.status(404).json({ error: "Restaurant not found" });
+    }
+  
+    let rating  = Number(req.body.rating);
+
+    if (Number.isNaN(rating)) 
+      {
+      return res.status(400).json({ error: "Invalid rating" });
+    }
+
+    if (Number.isNaN(restaurant.rating_sum)) {
+      restaurant.rating_sum = 0;
+    }
+
+    if (rating > 5 || rating < 1) {
+      return res.status(400).json({error: "Ratings must be greater than 1 and smaller than 5"});
+    }
+    
+    let newRatingSum = rating + restaurant.rating_sum;
+
+    await restaurant.update({
+      rating_count: restaurant.rating_count + 1,
+      rating_sum: newRatingSum
+    })
+
+    res.json({
+      message: "Restaurant reviews updated successfully",
+      restaurant,
+    });
+  }
+  // Catch errors
+  catch (error) {
+      res.status(500).json({ error: error.message});
+  }
+}
+
+
+// PUT /api/restaurants/:id/orders/:orderId
+export const acceptOrder = async (req, res) => {
+  try {
+    const { id, orderId } = req.params;
+    const { status } = req.body;
+
+    // Verify restaurant exists
+    const restaurant = await Restaurant.findByPk(id);
+    if (!restaurant) {
+      return res.status(404).json({ error: "Restaurant not found" });
+    }
+
+    // Find and update order
+    const order = await Order.findOne({
+      where: {
+        order_id: orderId,
+        restaurant_id: id,
+      },
+    });
+
+    if (!order) {
+      return res.status(404).json({ error: "Order not found for this restaurant" });
+    }
+
+    await order.update({ status: status || "Accepted" });
+
+    res.json({
+      message: "Order status updated successfully",
+      order,
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
 // GET /api/restaurants/:id/menu
 export const getRestaurantMenu = async (req, res) => {
   try {
@@ -93,40 +177,6 @@ export const getRestaurantImage = async (req, res) => {
   }
 };
 
-// PUT /api/restaurants/:id/orders/:orderId
-export const acceptOrder = async (req, res) => {
-  try {
-    const { id, orderId } = req.params;
-    const { status } = req.body;
-
-    // Verify restaurant exists
-    const restaurant = await Restaurant.findByPk(id);
-    if (!restaurant) {
-      return res.status(404).json({ error: "Restaurant not found" });
-    }
-
-    // Find and update order
-    const order = await Order.findOne({
-      where: {
-        order_id: orderId,
-        restaurant_id: id,
-      },
-    });
-
-    if (!order) {
-      return res.status(404).json({ error: "Order not found for this restaurant" });
-    }
-
-    await order.update({ status: status || "Accepted" });
-
-    res.json({
-      message: "Order status updated successfully",
-      order,
-    });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
 
 // POST /api/restaurants (owner creates their restaurant)
 export const createOwnRestaurant = async (req, res) => {

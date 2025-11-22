@@ -17,4 +17,5 @@ const Courier = sequelize.define("Courier", {
   user_id: { type: DataTypes.INTEGER, allowNull: false },
 });
 
+
 export default Courier;
