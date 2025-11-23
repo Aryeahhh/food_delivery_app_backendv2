@@ -164,6 +164,7 @@ export const deleteOrder = async (req, res) => {
 
 // GET /api/orders/user/:userId
 export const getOrdersByUser = async (req, res) => {
+  console.log("getOrdersByUser called");
   try {
     const { userId } = req.params;
 
@@ -177,7 +178,7 @@ export const getOrdersByUser = async (req, res) => {
       where: { user_id: userId },
       include: [
         { model: Restaurant, attributes: ["restaurant_id", "name", "address"] },
-        { model: Courier, attributes: ["courier_id", "name", "phone"] },
+        { model: Courier, as: "courier", attributes: ["courier_id", "name", "phone"] },
         {
           model: OrderItem,
           include: [{ model: MenuItem, attributes: ["menu_item_id", "item_name", "item_price"] }],
