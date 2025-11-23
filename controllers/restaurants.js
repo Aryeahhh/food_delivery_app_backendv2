@@ -57,21 +57,24 @@ export const getRestaurantById = async (req, res) => {
   }
 };
 
-// A method to add a restaurant rating
+// A method to add a restaurant rating to the rating table
 // POST /api/restaurant/rating
 export const addRestaurantRating = async (req, res) => {
   try {
-    const restaurantId = req.body.restaurant_id;
+    console.log(req.body);
+    const restaurantId = Number(req.body.restaurant_id);
 
     // Verify restaurant exists
     const restaurant = await Restaurant.findByPk(restaurantId);
+
+    console.log(restaurant.name);
 
     // Error Checking restaurant
     if (!restaurant) {
       return res.status(404).json({ error: "Restaurant not found" });
     }
-    let rating  = Number(req.body.rating);
-    if (Number.isNaN(rating)) 
+    const ratingFromUser  = Number(req.body.rating);
+    if (Number.isNaN(ratingFromUser)) 
       {
       return res.status(400).json({ error: "Invalid rating" });
     }
@@ -80,36 +83,95 @@ export const addRestaurantRating = async (req, res) => {
     }
 
     // Error Checking user id
-    const userId = req.body.user_id;
+    const userId = Number(req.body.user_id);
     const user = await User.findByPk(userId)
 
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
 
+    console.log(user.name)
+
     // Validating rating
-    if (rating > 5 || rating < 1) {
+    if (ratingFromUser > 5 || ratingFromUser < 1) {
       return res.status(400).json({error: "Ratings must be greater than 1 and smaller than 5"});
     }
 
+    console.log(restaurantId);
+    console.log(userId);
+    console.log(ratingFromUser);
 
     const newRating = await Rating.create({
       // Restaurant ID for FK
-      restaurant_id: req.body.restaurant_id,
+      restaurant_id: restaurantId,
       // User Id for FK
-      user_id: req.body.user_id,
+      user_id: userId,
       // Rating
-      rating: rating,
-    })
+      rating: ratingFromUser,
+    });
+    console.log(newRating);
 
     res.json({
       message: "Restaurant reviews updated successfully",
       newRating,
     });
+    
   }
   // Catch errors
   catch (error) {
+      console.log("Caught error")
       res.status(500).json({ error: error.message});
+  }
+}
+
+// A method to update a restaurants reviews
+// PUT /api/restaurants/:id/review
+export const addRestaurantReview = async (req, res) => {
+  try {
+    let  id  = req.body.restaurant_id;
+    
+    console.log("Method hit");
+
+    console.log(id);
+
+    // Verify restaurant exists
+    const restaurant = await Restaurant.findByPk(id);
+    if (!restaurant) {
+      return res.status(404).json({ error: "Restaurant not found" });
+    }
+
+    let rating  = Number(req.body.rating);
+    console.log(rating);
+    const menuItems = await MenuItem.findAll({
+      where: { restaurant_id: id },
+    });
+
+    if (Number.isNaN(rating)) 
+    {
+      return res.status(400).json({ error: "Invalid rating" });
+    }
+
+    if (Number.isNaN(restaurant.rating_sum)) {
+      restaurant.rating_sum = 0;
+    }
+
+    if (rating > 5 || rating < 1) {
+      return res.status(400).json({error: "Ratings must be greater than 1 and smaller than 5"});
+    }
+
+    let newRatingSum = rating + restaurant.rating_sum;
+
+    await restaurant.update({
+      rating_count: restaurant.rating_count + 1,
+      rating_sum: newRatingSum
+    })
+    res.json({
+      message: "Restaurant reviews updated successfully",
+      restaurant,
+    });
+
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
 }
 
