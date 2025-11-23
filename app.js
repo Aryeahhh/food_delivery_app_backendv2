@@ -82,7 +82,7 @@ app.post("/api/restaurants/:id/menu-items", verifyCookieJWT, requireRestaurant, 
 app.put("/api/restaurants/:id/image", verifyCookieJWT, requireAdminOrRestaurant, upload.single("image"), restaurantController.uploadRestaurantImage);
 
 // Route to add a review to the restaurant
-app.put("/api/restaurant/:id/review", restaurantController.addRestaurantReview);
+app.post("/api/restaurants/rating", restaurantController.addRestaurantRating);
 
 // MenuItem Routes
 app.get("/api/menu-items", menuItemController.getAllMenuItems);

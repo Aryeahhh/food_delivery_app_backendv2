@@ -2,6 +2,7 @@ import Restaurant from "../models/restaurant.model.js";
 import MenuItem from "../models/menuItem.model.js";
 import Order from "../models/order.model.js";
 import User from "../models/user.model.js";
+import Rating from "../models/rating.model.js"
 
 // Detect common image MIME types from magic numbers
 function detectImageMime(buf) {
@@ -56,46 +57,55 @@ export const getRestaurantById = async (req, res) => {
   }
 };
 
-// A method to update a restaurants reviews
-// PUT /api/restaurant/:id/review
-export const addRestaurantReview = async (req, res) => {
+// A method to add a restaurant rating
+// POST /api/restaurant/rating
+export const addRestaurantRating = async (req, res) => {
   try {
-    const { id } = req.params;
-
-    console.log("Method hit");
+    const restaurantId = req.body.restaurant_id;
 
     // Verify restaurant exists
-    const restaurant = await Restaurant.findByPk(id);
+    const restaurant = await Restaurant.findByPk(restaurantId);
 
+    // Error Checking restaurant
     if (!restaurant) {
       return res.status(404).json({ error: "Restaurant not found" });
     }
-  
     let rating  = Number(req.body.rating);
-
     if (Number.isNaN(rating)) 
       {
       return res.status(400).json({ error: "Invalid rating" });
     }
-
     if (Number.isNaN(restaurant.rating_sum)) {
       restaurant.rating_sum = 0;
     }
 
+    // Error Checking user id
+    const userId = req.body.user_id;
+    const user = await User.findByPk(userId)
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    // Validating rating
     if (rating > 5 || rating < 1) {
       return res.status(400).json({error: "Ratings must be greater than 1 and smaller than 5"});
     }
     
     let newRatingSum = rating + restaurant.rating_sum;
 
-    await restaurant.update({
-      rating_count: restaurant.rating_count + 1,
-      rating_sum: newRatingSum
+    const newRating = await Rating.create({
+      // Restaurant ID for FK
+      restaurant_id: req.body.restaurant_id,
+      // User Id for FK
+      user_id: req.body.user_id,
+      // Rating
+      rating: newRatingSum,
     })
 
     res.json({
       message: "Restaurant reviews updated successfully",
-      restaurant,
+      newRating,
     });
   }
   // Catch errors
