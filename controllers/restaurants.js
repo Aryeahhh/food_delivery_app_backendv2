@@ -91,8 +91,7 @@ export const addRestaurantRating = async (req, res) => {
     if (rating > 5 || rating < 1) {
       return res.status(400).json({error: "Ratings must be greater than 1 and smaller than 5"});
     }
-    
-    let newRatingSum = rating + restaurant.rating_sum;
+
 
     const newRating = await Rating.create({
       // Restaurant ID for FK
@@ -100,7 +99,7 @@ export const addRestaurantRating = async (req, res) => {
       // User Id for FK
       user_id: req.body.user_id,
       // Rating
-      rating: newRatingSum,
+      rating: rating,
     })
 
     res.json({
