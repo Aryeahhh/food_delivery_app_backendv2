@@ -14,6 +14,7 @@ import "./models/menuItem.model.js";
 import "./models/courier.model.js";
 import "./models/order.model.js";
 import "./models/orderItem.model.js";
+import "./models/rating.model.js";
 
 // Import controllers
 import * as userController from "./controllers/users.js";

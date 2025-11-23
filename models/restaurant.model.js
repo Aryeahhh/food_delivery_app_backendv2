@@ -17,4 +17,15 @@ const Restaurant = sequelize.define("Restaurant", {
   avg_rating: { type: DataTypes.DECIMAL(3, 2) },
 });
 
+/**
+ * Associate Rating model with Restaurant
+ * This allows querying ratings associated with a restaurant
+ */
+Restaurant.associate = (models) => {
+  Restaurant.hasMany(models.Rating, {
+    foreignKey: "restaurant_id",
+    onDelete: "CASCADE",
+  });
+};
+
 export default Restaurant;

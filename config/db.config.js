@@ -11,6 +11,7 @@ import Courier from "../models/courier.model.js";
 import MenuItem from "../models/menuItem.model.js";
 import Order from "../models/order.model.js";
 import OrderItem from "../models/orderItem.model.js";
+import Rating from "../models/rating.model.js";
 
 // Define associations
 Restaurant.belongsTo(User, { foreignKey: "user_id", as: "owner" });
@@ -36,5 +37,11 @@ Order.hasMany(OrderItem, { foreignKey: "order_id", as: "items" });
 
 OrderItem.belongsTo(MenuItem, { foreignKey: "menu_item_id" });
 MenuItem.hasMany(OrderItem, { foreignKey: "menu_item_id" });
+
+Rating.belongsTo(Restaurant, { foreignKey: "restaurant_id" });
+Restaurant.hasMany(Rating, { foreignKey: "restaurant_id", as: "ratings" });
+
+Rating.belongsTo(User, { foreignKey: "user_id" });
+User.hasMany(Rating, { foreignKey: "user_id", as: "ratings" });
 
 export default sequelize;

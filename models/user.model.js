@@ -13,4 +13,15 @@ const User = sequelize.define("User", {
   isCourier: { type: DataTypes.BOOLEAN, defaultValue: false },
 });
 
+/**
+ * Associate Rating model with User
+ * This allows querying ratings given by a user
+ */
+User.associate = (models) => {
+  User.hasMany(models.Rating, {
+    foreignKey: "user_id",
+    onDelete: "CASCADE",
+  });
+};
+
 export default User;
