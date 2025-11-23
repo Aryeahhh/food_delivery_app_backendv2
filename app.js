@@ -68,6 +68,8 @@ app.delete("/api/admin/menu-items/:id", verifyCookieJWT, requireAdmin, adminCont
 app.get("/api/admin/restaurants/pending", verifyCookieJWT, requireAdmin, adminController.listPendingRestaurants);
 app.put("/api/admin/restaurants/:id/approve", verifyCookieJWT, requireAdmin, adminController.approveRestaurant);
 app.put("/api/admin/restaurants/:id", verifyCookieJWT, requireAdmin, adminController.updateRestaurant);
+app.get("/api/admin/couriers/pending", verifyCookieJWT, requireAdmin, adminController.listPendingCouriers);
+app.put("/api/admin/couriers/:id/approve", verifyCookieJWT, requireAdmin, adminController.approveCourier);
 
 // Restaurant Routes
 app.get("/api/restaurants", restaurantController.getAllRestaurants);
@@ -91,9 +93,11 @@ app.delete("/api/menu-items/:id", menuItemController.deleteMenuItem);
 
 // Courier Routes
 app.get("/api/couriers", courierController.getAllCouriers);
+app.get("/api/couriers/user/:userId", courierController.getCourierByUserId);
 app.get("/api/couriers/:id/current-order", courierController.getCurrentOrder);
 app.get("/api/couriers/:id/past-orders", courierController.getPastOrders);
 app.put("/api/couriers/:id/availability", courierController.toggleAvailability);
+app.put("/api/couriers/:id", courierController.updateCourierProfile);
 
 // Order Routes
 app.get("/api/orders/available", courierController.getAvailableOrders);

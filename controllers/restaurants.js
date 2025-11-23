@@ -29,8 +29,11 @@ function detectImageMime(buf) {
 // GET /api/restaurants
 export const getAllRestaurants = async (req, res) => {
   try {
-    // Ensure deterministic ordering; without ORDER BY, Postgres can return rows in any order
-    const restaurants = await Restaurant.findAll({ order: [["restaurant_id", "ASC"]] });
+    // Only return approved restaurants for regular users
+    const restaurants = await Restaurant.findAll({ 
+      where: { isapproved: true },
+      order: [["restaurant_id", "ASC"]] 
+    });
     res.json(restaurants);
   } catch (error) {
     res.status(500).json({ error: error.message });

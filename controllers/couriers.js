@@ -51,6 +51,10 @@ export const acceptOrder = async (req, res) => {
       return res.status(404).json({ error: "Courier not found" });
     }
 
+    if (!courier.isApproved) {
+      return res.status(403).json({ error: "Courier account is pending approval" });
+    }
+
     if (!courier.isActive) {
       return res.status(400).json({ error: "Courier is not active/available" });
     }
@@ -107,6 +111,10 @@ export const getCurrentOrder = async (req, res) => {
       return res.status(404).json({ error: "Courier not found" });
     }
 
+    if (!courier.isApproved) {
+      return res.status(403).json({ error: "Courier account is pending approval" });
+    }
+
     const order = await Order.findOne({
       where: { 
         courier_id: id,
@@ -138,6 +146,10 @@ export const getPastOrders = async (req, res) => {
     const courier = await Courier.findByPk(id);
     if (!courier) {
       return res.status(404).json({ error: "Courier not found" });
+    }
+
+    if (!courier.isApproved) {
+      return res.status(403).json({ error: "Courier account is pending approval" });
     }
 
     const orders = await Order.findAll({
@@ -176,6 +188,10 @@ export const toggleAvailability = async (req, res) => {
       return res.status(404).json({ error: "Courier not found" });
     }
 
+    if (!courier.isApproved) {
+      return res.status(403).json({ error: "Courier account is pending approval" });
+    }
+
     await courier.update({ isActive });
 
     res.json({ 
@@ -192,6 +208,22 @@ export const getAllCouriers = async (req, res) => {
   try {
     const couriers = await Courier.findAll();
     res.json(couriers);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// GET /api/couriers/user/:userId - Get courier by user_id
+export const getCourierByUserId = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const courier = await Courier.findOne({ where: { user_id: userId } });
+    
+    if (!courier) {
+      return res.status(404).json({ error: "Courier profile not found" });
+    }
+    
+    res.json(courier);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -273,6 +305,49 @@ export const updateOrderStatus = async (req, res) => {
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
+};
 
+// PUT /api/couriers/:id - Update courier profile
+export const updateCourierProfile = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const {
+      name,
+      email,
+      phone,
+      address,
+      vehicleMake,
+      vehicleModel,
+      vehicleYear,
+      licensePlate,
+      vehicleColour,
+      city
+    } = req.body;
 
+    const courier = await Courier.findByPk(id);
+    if (!courier) {
+      return res.status(404).json({ error: "Courier not found" });
+    }
+
+    const updates = {};
+    if (typeof name !== 'undefined') updates.name = name;
+    if (typeof email !== 'undefined') updates.email = email;
+    if (typeof phone !== 'undefined') updates.phone = phone;
+    if (typeof address !== 'undefined') updates.address = address;
+    if (typeof vehicleMake !== 'undefined') updates.vehicleMake = vehicleMake;
+    if (typeof vehicleModel !== 'undefined') updates.vehicleModel = vehicleModel;
+    if (typeof vehicleYear !== 'undefined') updates.vehicleYear = vehicleYear;
+    if (typeof licensePlate !== 'undefined') updates.licensePlate = licensePlate;
+    if (typeof vehicleColour !== 'undefined') updates.vehicleColour = vehicleColour;
+    if (typeof city !== 'undefined') updates.city = city;
+
+    await courier.update(updates);
+
+    res.json({
+      message: "Courier profile updated successfully",
+      courier
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 };

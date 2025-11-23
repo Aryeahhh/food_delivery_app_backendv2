@@ -8,6 +8,7 @@ const Courier = sequelize.define("Courier", {
   phone: { type: DataTypes.STRING, allowNull: false },
   address: { type: DataTypes.STRING, allowNull: true },
   isActive: { type: DataTypes.BOOLEAN, defaultValue: false },
+  isApproved: { type: DataTypes.BOOLEAN, defaultValue: false },
   vehicleMake: { type: DataTypes.STRING, allowNull: true },
   vehicleModel: { type: DataTypes.STRING, allowNull: true },
   vehicleYear: { type: DataTypes.INTEGER, allowNull: true },

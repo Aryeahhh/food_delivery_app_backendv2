@@ -1,11 +1,17 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import User from "../models/user.model.js";
+import Courier from "../models/courier.model.js";
 
 // POST /api/users/register
 export const register = async (req, res) => {
   try {
-    const { name, email, password, phone, address, isAdmin = false, isCourier = false, isRestaurant = false } = req.body;
+    const { 
+      name, email, password, phone, address, 
+      isAdmin = false, isCourier = false, isRestaurant = false,
+      // Courier fields
+      vehicleMake, vehicleModel, vehicleYear, licensePlate, vehicleColour, city
+    } = req.body;
 
     // Check if user already exists
     const existingUser = await User.findOne({ where: { email } });
@@ -27,6 +33,32 @@ export const register = async (req, res) => {
       isCourier: Boolean(isCourier),
       isRestaurant: Boolean(isRestaurant),
     });
+
+    // If registering as courier, create courier profile
+    if (isCourier) {
+      console.log('Creating courier profile for user:', user.user_id);
+      try {
+        const courier = await Courier.create({
+          user_id: user.user_id,
+          name: name,
+          email: email,
+          phone: phone,
+          address: address,
+          vehicleMake: vehicleMake || null,
+          vehicleModel: vehicleModel || null,
+          vehicleYear: vehicleYear || null,
+          licensePlate: licensePlate || null,
+          vehicleColour: vehicleColour || null,
+          city: city || null,
+          isActive: false,
+          isApproved: false
+        });
+        console.log('Courier profile created successfully:', courier.courier_id);
+      } catch (courierError) {
+        console.error('Failed to create courier profile:', courierError);
+        throw courierError;
+      }
+    }
 
     // Generate JWT token
     const token = jwt.sign(

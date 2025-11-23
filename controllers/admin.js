@@ -2,6 +2,7 @@ import Restaurant from "../models/restaurant.model.js";
 import MenuItem from "../models/menuItem.model.js";
 import Courier from "../models/courier.model.js";
 import User from "../models/user.model.js";
+import { Op } from "sequelize";
 
 // POST /api/admin/restaurants
 export const addRestaurant = async (req, res) => {
@@ -229,6 +230,39 @@ export const updateRestaurant = async (req, res) => {
 
     await restaurant.update(updates);
     res.json({ message: "Restaurant updated", restaurant });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// GET /api/admin/couriers/pending - list couriers needing approval
+export const listPendingCouriers = async (req, res) => {
+  try {
+    console.log('Fetching pending couriers...');
+    const pending = await Courier.findAll({ 
+      where: { 
+        [Op.or]: [
+          { isApproved: false },
+          { isApproved: null }
+        ]
+      }
+    });
+    console.log(`Found ${pending.length} pending couriers`);
+    res.json({ count: pending.length, couriers: pending });
+  } catch (error) {
+    console.error('Error fetching pending couriers:', error);
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// PUT /api/admin/couriers/:id/approve - mark a courier as approved
+export const approveCourier = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const courier = await Courier.findByPk(id);
+    if (!courier) return res.status(404).json({ error: "Courier not found" });
+    await courier.update({ isApproved: true });
+    res.json({ message: "Courier approved", courier });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
