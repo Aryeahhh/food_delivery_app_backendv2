@@ -2,6 +2,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import User from "../models/user.model.js";
 import Courier from "../models/courier.model.js";
+import Rating from "../models/rating.model.js";
 
 // POST /api/users/register
 export const register = async (req, res) => {
@@ -229,3 +230,19 @@ export const logout = (req, res) => {
   });
   return res.json({ message: "Logged out. Auth cookie cleared." });
 };
+
+// Get ratings by user id
+// GET /api/ratings/user/:userId
+export const getRatingsByUser = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const reviews = await Rating.findAll({
+      where: { user_id: userId},
+      attributes: ["rating_id", "rating", "restaurant_id"],
+    });
+    res.json(reviews);
+    console.log(reviews);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}

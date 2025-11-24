@@ -83,10 +83,11 @@ app.put("/api/restaurants/:id/image", verifyCookieJWT, requireAdminOrRestaurant,
 
 // Route to add a rating to the rating table
 app.post("/api/restaurants/rating", restaurantController.addRestaurantRating);
-
-
 // Route to update the restaurant rating
 app.put("/api/restaurants/review", restaurantController.addRestaurantReview);
+  
+// Route to get ratings by user id
+app.get("/api/ratings/user/:userId", userController.getRatingsByUser);
 
 // MenuItem Routes
 app.get("/api/menu-items", menuItemController.getAllMenuItems);
