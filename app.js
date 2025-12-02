@@ -80,6 +80,8 @@ app.put("/api/restaurants/:id/orders/:orderId", restaurantController.acceptOrder
 app.post("/api/restaurants", verifyCookieJWT, requireRestaurant, restaurantController.createOwnRestaurant);
 app.post("/api/restaurants/:id/menu-items", verifyCookieJWT, requireRestaurant, restaurantController.addMenuItemForOwnRestaurant);
 app.put("/api/restaurants/:id/image", verifyCookieJWT, requireAdminOrRestaurant, upload.single("image"), restaurantController.uploadRestaurantImage);
+app.put("/api/restaurants/:id", verifyCookieJWT, requireAdminOrRestaurant, restaurantController.updateRestaurantInfo);
+
 
 // Route to add a rating to the rating table
 app.post("/api/restaurants/rating", restaurantController.addRestaurantRating);

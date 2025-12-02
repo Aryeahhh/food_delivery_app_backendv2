@@ -345,3 +345,47 @@ export const uploadRestaurantImage = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+export const updateRestaurantInfo = async (req, res) => {
+  try {
+    const userId = req.user?.user_id;
+    if (!userId) {
+      return res.status(401).json({ error: "Unauthenticated" });
+    }
+
+    const { id } = req.params;
+    const { name, details, address, phone } = req.body;
+
+    const restaurant = await Restaurant.findByPk(id);
+    if (!restaurant) {
+      return res.status(404).json({ error: "Restaurant not found" });
+    }
+
+    const user = await User.findByPk(userId);
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    if (!user.isAdmin && restaurant.user_id !== userId) {
+      return res.status(403).json({ error: "Not your restaurant" });
+    }
+
+    const updatedFields = {};
+    if (name !== undefined) updatedFields.name = name;
+    if (details !== undefined) updatedFields.details = details;
+    if (address !== undefined) updatedFields.address = address;
+    if (phone !== undefined) updatedFields.phone = phone;
+
+    await restaurant.update(updatedFields);
+
+    return res.json({
+      message: "Restaurant info updated successfully",
+      restaurant,
+    });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: error.message });
+  }
+};
+
