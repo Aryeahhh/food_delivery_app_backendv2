@@ -41,9 +41,9 @@ app.use(
 app.use(bodyParser.json());
 app.use(cookieParser());
 
-// Connect + Sync Database
-sequelize.sync({ alter: true })
-  .then(() => console.log("✅ PostgreSQL connected and models synced"))
+// Connect to Database (no auto-sync for production)
+sequelize.authenticate()
+  .then(() => console.log("✅ PostgreSQL connected"))
   .catch(err => console.error("❌ DB connection error:", err));
 
 // Simple test route
@@ -127,6 +127,11 @@ app.post("/api/chat", chatbotController.chat);
 
 app.use(express.json());
 
-// Start server
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+// Export app for Vercel serverless
+export default app;
+
+// For local development
+if (process.env.NODE_ENV !== 'production') {
+  const PORT = process.env.PORT || 3000;
+  app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+}

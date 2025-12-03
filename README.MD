@@ -59,9 +59,21 @@ This serves the Angular app and keeps `/api/*` routed to Express.
 - Orders: `POST /api/orders`, status updates, user orders
 - Admin: pending/approve endpoints for restaurants and couriers
 
-**Deploy**
-- Recommended: Deploy backend on Render/Railway/Fly; copy Angular build into `public/` as part of CI/CD.
-- Alternatively, host UI separately (Vercel) and point Angular `environment.ts` to backend URL.
+**Deploy to Render (Recommended)**
+1. Push backend to GitHub
+2. Sign up at https://render.com with GitHub
+3. Create New → Web Service → Connect your `food_delivery_app_backendv2` repo
+4. Configure:
+   - **Build Command**: `npm install`
+   - **Start Command**: `node app.js`
+   - **Environment Variables**:
+     - `DATABASE_URL`: Your PostgreSQL connection string
+     - `JWT_SECRET`: Your JWT secret
+     - `NODE_ENV`: production
+5. Deploy and copy your Render URL (e.g., `https://gourmai-backend.onrender.com`)
+6. Update frontend `environment.ts` with this URL
+
+**Note**: Vercel serverless is NOT compatible with this backend due to Sequelize sync, persistent connections, and pg native bindings.
 
 **Troubleshooting**
 - DB migrations: Sequelize `sync({ alter: true })` updates tables; for production, prefer migrations.
