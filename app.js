@@ -5,6 +5,7 @@ import bodyParser from "body-parser";
 import sequelize from "./config/db.config.js";
 import cookieParser from "cookie-parser";
 import multer from "multer";
+import path from "path";
 import { verifyCookieJWT, requireAdmin, requireRestaurant, requireAdminOrRestaurant } from "./middleware/cookieAuth.js";
 
 // Import all models
@@ -46,9 +47,17 @@ sequelize.authenticate()
   .then(() => console.log("✅ PostgreSQL connected"))
   .catch(err => console.error("❌ DB connection error:", err));
 
-// Simple test route
+// Root should serve Angular app
 app.get("/", (req, res) => {
-  res.send("🍽️ GourmAI backend is running!");
+  res.sendFile(path.join(publicDir, "index.html"));
+});
+
+// Serve Angular frontend (built assets) from backend/public
+const publicDir = path.join(process.cwd(), "public");
+app.use(express.static(publicDir));
+// SPA fallback: let Angular handle client routes
+app.get(["/home", "/login", "/register", "/cart", "/checkout", "/courier", "/admin", "/restaurants", "/user", "/user-orders", "/account"], (req, res) => {
+  res.sendFile(path.join(publicDir, "index.html"));
 });
 
 // User Routes
