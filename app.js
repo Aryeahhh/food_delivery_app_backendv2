@@ -47,9 +47,9 @@ sequelize.authenticate()
   .then(() => console.log("✅ PostgreSQL connected"))
   .catch(err => console.error("❌ DB connection error:", err));
 
-// Simple test route
+// serve frontend
 app.get("/", (req, res) => {
-  res.send("🍽️ GourmAI backend is running!");
+  res.sendFile(path.join(publicDir, "index.html"));
 });
 
 // Serve Angular frontend (built assets) from backend/public
