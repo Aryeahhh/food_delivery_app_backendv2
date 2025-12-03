@@ -1,5 +1,8 @@
 import { Sequelize } from "sequelize";
 import dotenv from "dotenv";
+// Explicitly import pg and pg-hstore so Vercel bundles them
+import "pg";
+import "pg-hstore";
 
 dotenv.config();
 
