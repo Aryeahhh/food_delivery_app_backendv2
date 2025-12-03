@@ -33,9 +33,19 @@ const app = express();
 // in-memory upload for small images (stored as bytea)
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 5 * 1024 * 1024 } });
 
+// CORS: allow localhost dev and Vercel production
+const allowedOrigins = new Set([
+  "http://localhost:4200",
+  "http://localhost:3000",
+  "https://food-delivery-app-backendv2-three.vercel.app",
+]);
 app.use(
   cors({
-    origin: "https://food-delivery-app-backendv2-three.vercel.app",
+    origin: (origin, callback) => {
+      if (!origin) return callback(null, true); // same-origin or curl
+      if (allowedOrigins.has(origin)) return callback(null, true);
+      return callback(new Error("Not allowed by CORS"));
+    },
     credentials: true,
   })
 );
