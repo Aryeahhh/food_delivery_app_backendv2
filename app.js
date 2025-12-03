@@ -35,7 +35,7 @@ const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 5 *
 
 app.use(
   cors({
-    origin: "http://localhost:4200",
+    origin: "https://food-delivery-app-backendv2-three.vercel.app",
     credentials: true,
   })
 );
@@ -47,9 +47,9 @@ sequelize.authenticate()
   .then(() => console.log("✅ PostgreSQL connected"))
   .catch(err => console.error("❌ DB connection error:", err));
 
-// Root should serve Angular app
+// Simple test route
 app.get("/", (req, res) => {
-  res.sendFile(path.join(publicDir, "index.html"));
+  res.send("🍽️ GourmAI backend is running!");
 });
 
 // Serve Angular frontend (built assets) from backend/public
